@@ -1,37 +1,24 @@
-<!DOCTYPE html>
+                <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DZ_livry - النظام الموحد</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <title>DZ_livry V2.0</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
     <style>
-        :root { --main-blue: #0d47a1; --gold: #ffd600; --bg: #f0f4f8; }
-        body { font-family: 'Cairo', sans-serif; background: var(--bg); margin: 0; padding-bottom: 90px; }
-        
-        .header { background: var(--main-blue); color: white; padding: 40px 20px; text-align: center; border-radius: 0 0 40px 40px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
-        .logo { font-size: 50px; margin-bottom: 10px; color: var(--gold); }
-        
-        .container { padding: 15px; max-width: 450px; margin: auto; }
-        .card { background: white; padding: 20px; border-radius: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        
-        input, textarea { width: 100%; padding: 12px; margin: 10px 0; border: 2px solid #eee; border-radius: 12px; box-sizing: border-box; font-family: 'Cairo'; }
-        input:focus { border-color: var(--main-blue); outline: none; }
-        
-        .btn { background: var(--main-blue); color: white; border: none; padding: 15px; border-radius: 12px; width: 100%; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .btn:disabled { background: #ccc; }
-        
-        .nav-bar { position: fixed; bottom: 15px; left: 15px; right: 15px; background: white; display: flex; justify-content: space-around; padding: 10px; border-radius: 20px; box-shadow: 0 5px 25px rgba(0,0,0,0.1); }
-        .nav-item { color: #aaa; text-align: center; cursor: pointer; font-size: 12px; }
-        .nav-item.active { color: var(--main-blue); font-weight: bold; }
-        
+        :root { --brand-blue: #0a192f; --brand-gold: #fcc419; }
+        body { font-family: sans-serif; background-color: #f4f7f6; margin: 0; padding-bottom: 80px; }
+        .header { background: var(--brand-blue); color: white; padding: 25px; text-align: center; border-bottom: 4px solid var(--brand-gold); }
+        .card { background: white; margin: 15px; padding: 20px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); text-align: center; }
+        .btn-blue { background: var(--brand-blue); color: white; width: 100%; padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .btn-gold { background: var(--brand-gold); color: var(--brand-blue); width: 100%; padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        input, textarea { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; text-align: center; }
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #ddd; }
+        .nav-item { text-align: center; font-size: 12px; color: #666; cursor: pointer; flex: 1; }
+        .nav-item.active { color: var(--brand-blue); font-weight: bold; }
         .page { display: none; }
         .active-page { display: block; }
     </style>
@@ -39,174 +26,165 @@
 <body>
 
     <div class="header">
-        <i class="fas fa-user-shield logo"></i>
-        <h1>DZ_livry <span style="font-size: 15px; color: var(--gold);">V2.0</span></h1>
-        <p>نظام التوثيق والتحقق من المصداقية</p>
+        <h1>DZ_livry <span style="font-size:12px; color:var(--brand-gold);">V2.0</span></h1>
     </div>
 
-    <div class="container">
-        <div id="searchPage" class="page active-page">
-            <div class="card">
-                <h3>🔍 فحص رقم الهاتف</h3>
-                <input type="tel" id="phoneSearch" placeholder="أدخل الرقم هنا...">
-                <button class="btn" onclick="checkPhone()">فحص السجل</button>
-                <div id="resultBox" style="margin-top:20px; display:none; text-align:center;"></div>
-            </div>
+    <div id="authPage" class="page active-page">
+        <div class="card" id="loginBox">
+            <h3>دخول التجار</h3>
+            <input type="email" id="email" placeholder="البريد الإلكتروني">
+            <input type="password" id="pass" placeholder="كلمة المرور">
+            <button class="btn-blue" onclick="handleLogin()">دخول</button>
+            <p onclick="toggleAuth()" style="color:blue; font-size:12px; cursor:pointer; margin-top:15px;">ليس لديك حساب؟ سجل هنا</p>
         </div>
-
-        <div id="reportPage" class="page">
-            <div class="card">
-                <h3>⚠️ إضافة بلاغ موثق</h3>
-                <div id="reportForm">
-                    <input type="tel" id="badPhone" placeholder="رقم هاتف الزبون">
-                    <textarea id="reason" placeholder="صف المشكلة بالتفصيل (هذا هو دليلك)..."></textarea>
-                    <button class="btn" id="submitBtn" onclick="submitReport()">تأكيد البلاغ (مرة واحدة فقط)</button>
-                </div>
-                <div id="reportLock" style="display:none; text-align:center; color: red;">
-                    يجب إكمال بيانات متجرك في "حسابي" أولاً!
-                </div>
-            </div>
-        </div>
-
-        <div id="profilePage" class="page">
-            <div class="card" id="authSection">
-                <h3>📝 توثيق تاجر جديد</h3>
-                <input type="email" id="emailInput" placeholder="البريد الإلكتروني">
-                <input type="password" id="passInput" placeholder="كلمة السر">
-                <input type="text" id="merchantName" placeholder="الاسم الكامل أو اسم المتجر">
-                <input type="url" id="storeLink" placeholder="رابط صفحتك (فيسبوك/انستغرام)">
-                <button class="btn" onclick="handleSignUp()">إنشاء حساب موثق</button>
-                <button class="btn" style="background:none; color:var(--main-blue); margin-top:10px;" onclick="handleLogin()">لديك حساب؟ سجل دخولك</button>
-            </div>
-            <div class="card" id="userInfo" style="display:none;">
-                <h3 id="welcomeMsg"></h3>
-                <p id="storeStatus"></p>
-                <button class="btn" style="background:#e74c3c;" onclick="handleLogout()">خروج</button>
-            </div>
-        </div>
-    </div>
-
-    <nav class="nav-bar">
-        <div class="nav-item active" id="navSearch" onclick="showPage('searchPage', 'navSearch')"><i class="fas fa-search"></i><br>بحث</div>
-        <div class="nav-item" id="navReport" onclick="showPage('reportPage', 'navReport')"><i class="fas fa-bullhorn"></i><br>بلاغ</div>
-        <div class="nav-item" id="navProfile" onclick="showPage('profilePage', 'navProfile')"><i class="fas fa-id-card"></i><br>حسابي</div>
-    </nav>
-
-<script>
-    const firebaseConfig = {
-        apiKey: "AIzaSyA0oo95KIoBEdOLCLwlaR92EgOewCsgu8o",
-        authDomain: "dz-livry.firebaseapp.com",
-        databaseURL: "https://dz-livry-default-rtdb.europe-west1.firebasedatabase.app",
-        projectId: "dz-livry",
-        storageBucket: "dz-livry.firebasestorage.app",
-        messagingSenderId: "957578073587",
-        appId: "1:957578073587:web:e34939ddc0d160a1426e86"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-    const auth = firebase.auth();
-
-    auth.onAuthStateChanged(user => {
-        if (user) {
-            document.getElementById('authSection').style.display = 'none';
-            document.getElementById('userInfo').style.display = 'block';
-            db.ref('merchants/' + user.uid).once('value', s => {
-                const d = s.val();
-                document.getElementById('welcomeMsg').innerText = "مرحباً: " + (d?.name || "تاجر");
-                document.getElementById('storeStatus').innerText = "متجرك: " + (d?.store || "غير محدد");
-                // السماح بالبلاغ فقط إذا كان لديه اسم ومتجر
-                if(d?.name && d?.store) {
-                    document.getElementById('reportForm').style.display = 'block';
-                    document.getElementById('reportLock').style.display = 'none';
-                } else {
-                    document.getElementById('reportForm').style.display = 'none';
-                    document.getElementById('reportLock').style.display = 'block';
-                }
-            });
-        } else {
-            document.getElementById('authSection').style.display = 'block';
-            document.getElementById('userInfo').style.display = 'none';
-            document.getElementById('reportForm').style.display = 'none';
-            document.getElementById('reportLock').style.display = 'block';
-        }
-    });
-
-    function showPage(p, n) {
-        document.querySelectorAll('.page').forEach(x => x.classList.remove('active-page'));
-        document.getElementById(p).classList.add('active-page');
-        document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
-        document.getElementById(n).classList.add('active');
-    }
-
-    function handleSignUp() {
-        const e = document.getElementById('emailInput').value;
-        const p = document.getElementById('passInput').value;
-        const n = document.getElementById('merchantName').value;
-        const s = document.getElementById('storeLink').value;
         
-        if(!n || !s) return alert("أكمل بيانات التوثيق");
+        <div class="card" id="registerBox" style="display:none;">
+            <h3>إنشاء حساب تاجر جديد</h3>
+            <p style="font-size: 11px; color: #666;">سيتطلب الحساب تفعيلاً لاستخدام الميزات</p>
+            <input type="text" id="regName" placeholder="اسم المحل / التاجر">
+            <input type="email" id="regEmail" placeholder="البريد الإلكتروني">
+            <input type="password" id="regPass" placeholder="كلمة المرور">
+            <button class="btn-gold" onclick="handleSignUp()">إنشاء الحساب والتفعيل</button>
+            <p onclick="toggleAuth()" style="color:blue; font-size:12px; cursor:pointer; margin-top:15px;">تملك حساب؟ ادخل هنا</p>
+        </div>
+    </div>
 
-        auth.createUserWithEmailAndPassword(e, p).then(res => {
-            db.ref('merchants/' + res.user.uid).set({ name: n, store: s, email: e });
-        }).catch(err => alert(err.message));
-    }
+    <div id="searchPage" class="page">
+        <div class="card">
+            <h3>🔍 بحث عن مشتري 🔒</h3>
+            <input type="tel" id="searchPhone" placeholder="0XXXXXXXXX">
+            <button class="btn-blue" onclick="checkAndSearch()">إبدأ البحث</button>
+        </div>
+    </div>
 
-    function handleLogin() {
-        const e = document.getElementById('emailInput').value;
-        const p = document.getElementById('passInput').value;
-        auth.signInWithEmailAndPassword(e, p).catch(err => alert(err.message));
-    }
+    <div id="reportPage" class="page">
+        <div class="card">
+            <h3>📢 إضافة بلاغ جديد 🔒</h3>
+            <input type="tel" id="reportPhone" placeholder="رقم هاتف المشتري">
+            <textarea id="reportReason" placeholder="سبب البلاغ..."></textarea>
+            <button class="btn-gold" onclick="checkAndReport()">إرسال البلاغ</button>
+        </div>
+    </div>
 
-    function handleLogout() { auth.signOut(); }
+    <div id="profilePage" class="page">
+        <div class="card">
+            <h3>👤 حالة الحساب والاشتراك</h3>
+            <div id="subStatus" style="font-weight:bold; padding:15px; margin:10px; border-radius:10px; background:#f9f9f9;">جاري التحميل...</div>
+            
+            <div id="paymentArea" style="display:none;">
+                <p style="font-size:14px;">لتفعيل البحث والبلاغ، يرجى إدخال الكود الخاص بك:</p>
+                <input type="text" id="activationCode" placeholder="Code XXXXXX">
+                <button class="btn-gold" onclick="verifyCode()">تفعيل الحساب الآن</button>
+            </div>
+            
+            <button class="btn-blue" style="background:#eee; color:black; margin-top:30px;" onclick="firebase.auth().signOut()">تسجيل الخروج</button>
+        </div>
+    </div>
 
-    function submitReport() {
-        const phone = document.getElementById('badPhone').value.trim();
-        const reason = document.getElementById('reason').value.trim();
-        const uid = auth.currentUser.uid;
+    <div class="bottom-nav">
+        <div class="nav-item" id="n1" onclick="showPage('searchPage', 'n1')">🔍<br>بحث</div>
+        <div class="nav-item" id="n2" onclick="showPage('reportPage', 'n2')">📢<br>بلاغ</div>
+        <div class="nav-item" id="n3" onclick="showPage('profilePage', 'n3')">👤<br>حسابي</div>
+    </div>
 
-        if(!phone || !reason) return alert("أدخل البيانات");
+    <script>
+        // إعدادات Firebase الخاصة بك
+        const firebaseConfig = {
+            apiKey: "AIzaSyA0oo95KIoBEdOLCLwlaR92EgOewCsgu8o",
+            authDomain: "dz-livry.firebaseapp.com",
+            databaseURL: "https://dz-livry-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "dz-livry",
+            storageBucket: "dz-livry.firebasestorage.app",
+            messagingSenderId: "957578073587",
+            appId: "1:957578073587:web:e34939ddc0d160a1426e86"
+        };
 
-        // فحص تكرار البلاغ من نفس التاجر
-        db.ref('reports_by_merchant/' + uid + '/' + phone).once('value', snapshot => {
-            if (snapshot.exists()) {
-                alert("لقد قمت بالتبليغ عن هذا الرقم مسبقاً! لا يمكن التكرار.");
-            } else {
-                // تسجيل البلاغ في قائمة البلاك ليست
-                db.ref('blacklist/' + phone).push({
-                    reason: reason,
-                    merchantId: uid,
-                    date: new Date().toLocaleDateString()
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.database();
+        let isUserActive = false;
+
+        // مراقبة حالة الحساب
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                showPage('profilePage', 'n3');
+                db.ref('merchants/' + user.uid).on('value', s => {
+                    const data = s.val() || {};
+                    isUserActive = data.is_active || false;
+                    const statusEl = document.getElementById('subStatus');
+                    const payArea = document.getElementById('paymentArea');
+                    
+                    if(isUserActive) {
+                        statusEl.innerHTML = "حسابك مفعل ✅";
+                        statusEl.style.color = "green";
+                        payArea.style.display = "none";
+                    } else {
+                        statusEl.innerHTML = "حسابك غير مفعل ❌";
+                        statusEl.style.color = "red";
+                        payArea.style.display = "block";
+                    }
                 });
-                // تسجيل أن هذا التاجر بلغ عن هذا الرقم
-                db.ref('reports_by_merchant/' + uid + '/' + phone).set(true);
-                alert("تم تسجيل بلاغك بنجاح.");
-                showPage('searchPage', 'navSearch');
+            } else {
+                showPage('authPage', '');
             }
         });
-    }
 
-    function checkPhone() {
-        const phone = document.getElementById('phoneSearch').value.trim();
-        const box = document.getElementById('resultBox');
-        if(!phone) return;
+        // دوال القفل (لا يمكن الاستخدام بدون تفعيل)
+        function checkAndSearch() {
+            if (!isUserActive) return alert("⚠️ الميزة مقفولة! يرجى تفعيل اشتراكك أولاً من صفحة حسابي.");
+            const phone = document.getElementById('searchPhone').value;
+            if(!phone) return alert("أدخل الرقم");
+            db.ref('reports/' + phone).once('value', s => {
+                alert(s.exists() ? "⚠️ تنبيه: هذا الرقم مسجل في القائمة السوداء!" : "✅ الرقم سليم.");
+            });
+        }
 
-        db.ref('blacklist/' + phone).once('value', s => {
-            box.style.display = 'block';
-            if(s.exists()) {
-                let html = '<h4 style="color:red">⚠️ زبون عليه بلاغات</h4>';
-                s.forEach(child => {
-                    html += `<div style="border-bottom:1px solid #eee; padding:10px;">
-                                <b>السبب:</b> ${child.val().reason}<br>
-                                <small>تاريخ: ${child.val().date}</small>
-                             </div>`;
-                });
-                box.innerHTML = html;
-            } else {
-                box.innerHTML = '<h4 style="color:green">✅ زبون نظيف</h4><p>لم يبلغ عنه أي تاجر من قبل.</p>';
-            }
-        });
-    }
-</script>
+        function checkAndReport() {
+            if (!isUserActive) return alert("⚠️ البلاغ متاح فقط للمشتركين.");
+            const phone = document.getElementById('reportPhone').value;
+            const res = document.getElementById('reportReason').value;
+            if(!phone || !res) return alert("أكمل البيانات");
+            db.ref('reports/' + phone).push({ reason: res, date: new Date().toLocaleDateString() })
+            .then(() => alert("تم إرسال البلاغ بنجاح"));
+        }
+
+        function verifyCode() {
+            const code = document.getElementById('activationCode').value;
+            db.ref('unused_codes/' + code).once('value', s => {
+                if(s.exists()){
+                    db.ref('merchants/' + auth.currentUser.uid).update({ is_active: true });
+                    db.ref('unused_codes/' + code).remove();
+                    alert("تم التفعيل بنجاح! شكراً لاشتراكك.");
+                } else { alert("الكود خاطئ"); }
+            });
+        }
+
+        function showPage(pId, nId) {
+            document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+            document.getElementById(pId).style.display = 'block';
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            if(nId) document.getElementById(nId).classList.add('active');
+        }
+
+        function toggleAuth() {
+            const l = document.getElementById('loginBox');
+            const r = document.getElementById('registerBox');
+            l.style.display = l.style.display === 'none' ? 'block' : 'none';
+            r.style.display = r.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function handleLogin() {
+            auth.signInWithEmailAndPassword(document.getElementById('email').value, document.getElementById('pass').value)
+            .catch(e => alert("خطأ: " + e.message));
+        }
+
+        function handleSignUp() {
+            const email = document.getElementById('regEmail').value;
+            auth.createUserWithEmailAndPassword(email, document.getElementById('regPass').value).then(res => {
+                db.ref('merchants/' + res.user.uid).set({ email: email, is_active: false });
+            }).catch(e => alert("خطأ: " + e.message));
+        }
+    </script>
 </body>
-</html>
+    </html>
+    
